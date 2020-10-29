@@ -23,7 +23,7 @@ void SNCalc::Sourceinit(double den_inp, double x1_inp, double x2_inp, double y1_
 }
 
 bool SNCalc::InSource(double x, double y) {
-	return x > x1_source && x < x2_source && y > y1_source && y < y2_source;
+	return x >= x1_source && x <= x2_source && y >= y1_source && y <= y2_source;
 }
 
 void SNCalc::Calc(int xN, int yN, double err) {
@@ -106,12 +106,20 @@ void SNCalc::Calc_N(int xN, int yN, double err, int comb_N[][2] ) {
 		iter_wgt = wgt_set[comb_N[i][0]];
 		for (iter_x = 0; iter_x < xN; iter_x++) {
 			pos_x = x_length / xN * iter_x;
-			for (iter_y = 0; iter_y < yN; iter_y++) {
+				if (iter_y == 5) {
+					cout << endl;
+				}
+
 				pos_y = y_length / yN * iter_y;
 				E = 2 * iter_miu * x_length / xN;
 				F = 2 * iter_ita * y_length / yN;
 				Q_source = InSource(pos_x, pos_y) ? S * source_den/2/PI : 0;
-				Q_scatter = flux_t[iter_x][iter_y]* sig_s0/2/PI;
+
+				Q_scatter = 0;
+				for (int iter_miu = 0; iter_miu < N_miu; iter_miu++) {
+					Q_scatter = Q_scatter + 0;
+				}
+				//Q_scatter = flux_t[iter_x][iter_y]* sig_s0/2/PI;
 
 				// todo : find out 
 
