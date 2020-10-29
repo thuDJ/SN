@@ -106,6 +106,7 @@ void SNCalc::Calc_N(int xN, int yN, double err, int comb_N[][2] ) {
 		iter_wgt = wgt_set[comb_N[i][0]];
 		for (iter_x = 0; iter_x < xN; iter_x++) {
 			pos_x = x_length / xN * iter_x;
+			for (iter_y = 0; iter_y < yN; iter_y++) {
 				if (iter_y == 5) {
 					cout << endl;
 				}
