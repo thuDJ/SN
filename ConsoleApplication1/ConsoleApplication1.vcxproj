@@ -140,7 +140,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="SN.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="SNcal.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SNcal.h" />
