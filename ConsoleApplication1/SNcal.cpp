@@ -58,10 +58,10 @@ void SNCalc::Calc_N(int xN, int yN, double err, int comb_N[][2] ) {
 		wgt_set = wgt_12;
 	}
 
-	double** flux_t = new double* [xN];
-	double*** flux = new double** [xN];  //
-	double*** flux_halfx = new double** [xN+1];
-	double*** flux_halfy = new double** [xN+1];
+	double** flux_t = new double* [xN];  //total flux
+	double*** flux = new double** [xN];  //angle flux
+	double*** flux_halfx = new double** [xN+1]; //x-axis half flux
+	double*** flux_halfy = new double** [xN+1]; //y-axis half flux
 	for (int i = 0; i < xN; i++) {
 		flux[i] = new double* [yN];
 		flux_t[i] = new double[yN];
