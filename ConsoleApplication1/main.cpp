@@ -11,8 +11,8 @@ int main()
     SNCalc SN4(4);
     SN4.Geoinit(100, 100);
     SN4.Matinit(0.25, 0.15, 0.01, 0.0025);
-    SN4.Sourceinit(1e3, 0, 25, 25, 50);
-    SN4.Calc(12, 12);
+    SN4.Sourceinit(1e7, 0, 25, 25, 50);
+    SN4.Calc(20, 20);
     
 }
 

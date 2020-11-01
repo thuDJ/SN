@@ -23,7 +23,7 @@ void SNCalc::Sourceinit(double den_inp, double x1_inp, double x2_inp, double y1_
 }
 
 bool SNCalc::InSource(double x, double y) {
-	return x >= x1_source && x <= x2_source && y >= y1_source && y <= y2_source;
+	return x >= x1_source && x < x2_source && y >= y1_source && y < y2_source;
 }
 
 void SNCalc::Calc(int xN, int yN, double err) {
@@ -69,7 +69,7 @@ void SNCalc::Calc_N(int xN, int yN, double err, int comb_N[][2] ) {
 			flux[i][j] = new double[N_miu];
 			flux_t[i][j] = 0;
 			for (int k = 0; k < N_miu; k++) {
-				flux[i][j][k] = 1; // 初始时刻：通量均匀分布
+				flux[i][j][k] = 100; // 初始时刻：通量均匀分布
 			}
 		}
 	}
@@ -99,52 +99,58 @@ void SNCalc::Calc_N(int xN, int yN, double err, int comb_N[][2] ) {
 	double E, F, Q, Q_scatter, Q_source;
 	double S = x_length * y_length / xN / yN;
 
-	//第一卦限,从左下角开始
-	for (int i = 0; i < N_miu; i++) {
-		iter_miu = miu_set[comb_N[i][0]];
-		iter_ita = miu_set[comb_N[i][1]];
-		iter_wgt = wgt_set[comb_N[i][0]];
-		for (iter_x = 0; iter_x < xN; iter_x++) {
-			pos_x = x_length / xN * iter_x;
-			for (iter_y = 0; iter_y < yN; iter_y++) {
-				if (iter_y == 5) {
-					cout << endl;
+	for (int round = 0; round < 10; round++) {
+		//第一卦限,从左下角开始
+		//for (int i = 0; i < N_miu; i++) {
+		for (int i = 0; i < N_miu; i++) {
+			iter_miu = miu_set[comb_N[i][0]];
+			iter_ita = miu_set[comb_N[i][1]];
+			iter_wgt = wgt_set[comb_N[i][0]];
+			for (iter_x = 0; iter_x < xN; iter_x++) {
+				pos_x = x_length / xN * iter_x;
+				for (iter_y = 0; iter_y < yN; iter_y++) {
+					if (iter_y == 5) {
+						//cout << endl;
+					}
+
+					pos_y = y_length / yN * iter_y;
+					E = 2 * iter_miu * y_length / yN;
+					F = 2 * iter_ita * x_length / xN;
+					Q_source = InSource(pos_x, pos_y) ? S * source_den / 2 / PI * y_length / yN * x_length / xN * y_length / yN * x_length / xN : 0;
+
+					Q_scatter = 0;
+					for (int iter_miu = 0; iter_miu < N_miu; iter_miu++) {
+						Q_scatter = Q_scatter + 0;
+					}
+					Q_scatter = flux_t[iter_x][iter_y] * sig_s0 / 2 / PI * y_length / yN * x_length / xN;
+
+					// todo : find out 
+
+					Q = Q_source + Q_scatter;
+					flux[iter_x][iter_y][i] = (E * flux_halfx[iter_x][iter_y][i] + F * flux_halfy[iter_x][iter_y][i] + Q) / (E + F + sig_t * y_length / yN * x_length / xN);
+					flux_halfx[iter_x + 1][iter_y][i] = 2 * flux[iter_x][iter_y][i] - flux_halfx[iter_x][iter_y][i];
+					flux_halfy[iter_x][iter_y + 1][i] = 2 * flux[iter_x][iter_y][i] - flux_halfx[iter_x][iter_y][i];
+					if (flux_halfx[iter_x + 1][iter_y][i] < 0) flux_halfx[iter_x + 1][iter_y][i] = 0;
+					if (flux_halfy[iter_x][iter_y + 1][i] < 0) flux_halfy[iter_x][iter_y + 1][i] = 0;
 				}
-
-				pos_y = y_length / yN * iter_y;
-				E = 2 * iter_miu * x_length / xN;
-				F = 2 * iter_ita * y_length / yN;
-				Q_source = InSource(pos_x, pos_y) ? S * source_den/2/PI : 0;
-
-				Q_scatter = 0;
-				for (int iter_miu = 0; iter_miu < N_miu; iter_miu++) {
-					Q_scatter = Q_scatter + 0;
-				}
-				//Q_scatter = flux_t[iter_x][iter_y]* sig_s0/2/PI;
-
-				// todo : find out 
-
-				Q = Q_source + Q_scatter;
-				flux[iter_x][iter_y][i] = (E * flux_halfx[iter_x][iter_y][i] + F * flux_halfy[iter_x][iter_y][i] + Q) / (E + F + sig_t);
-				flux_halfx[iter_x + 1][iter_y][i] = 2 * flux[iter_x][iter_y][i] - flux_halfx[iter_x][iter_y][i];
-				flux_halfy[iter_x][iter_y + 1][i] = 2 * flux[iter_x][iter_y][i] - flux_halfx[iter_x][iter_y][i];
 			}
 		}
-	}
-	//第二卦限，从右下角开始
+		//第二卦限，从右下角开始
 
-	//第三卦限，从右上角开始
+		//第三卦限，从右上角开始
 
-	//第四卦限，从左上角开始
+		//第四卦限，从左上角开始
 
 
-	for (iter_x = 0; iter_x < xN; iter_x++) {
-		for (iter_y = 0; iter_y < yN; iter_y++) {
-			flux_t[iter_x][iter_y] = 0;
-			for (int i = 0; i < N_miu; i++) {
-				flux_t[iter_x][iter_y] = flux_t[iter_x][iter_y] + flux[iter_x][iter_y][i] / comb_N[i][0] / 4;
+		for (iter_x = 0; iter_x < xN; iter_x++) {
+			for (iter_y = 0; iter_y < yN; iter_y++) {
+				flux_t[iter_x][iter_y] = 0;
+				for (int i = 0; i < N_miu; i++) {
+					flux_t[iter_x][iter_y] = flux_t[iter_x][iter_y] + flux[iter_x][iter_y][i] / comb_N[i][0] / 4;
+				}
+				cout << flux_t[iter_x][iter_y] << ' ';
 			}
-			cout << flux_t[iter_x][iter_y] << ' ';
+			cout << endl;
 		}
 		cout << endl;
 	}
